@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    { "id": "mysqlUser", "type": "promptString", "description": "MySQL user", "default": "root" },
+    { "id": "mysqlPassword", "type": "promptString", "description": "MySQL password", "password": true }
+  ],
+  "tasks": [
+    {
+      "label": "1) Install Python packages",
+      "type": "shell",
+      "command": "python -m pip install -r requirements.txt",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "2) Install database (RESETS cloudsched DB)",
+      "type": "shell",
+      "command": "python scripts/install_db.py --user ${input:mysqlUser} --password ${input:mysqlPassword}",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "2b) Patch database (keeps data)",
+      "type": "shell",
+      "command": "python scripts/install_db.py --user ${input:mysqlUser} --password ${input:mysqlPassword} --patch",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "3) Run API (http://127.0.0.1:8000)",
+      "type": "shell",
+      "command": "python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Run tests",
+      "type": "shell",
+      "command": "python -m pytest -q",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
